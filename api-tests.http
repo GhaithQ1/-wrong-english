@@ -1,0 +1,178 @@
+### Health Check
+GET http://localhost:5000/api/health
+
+### Get leaderboard (top 20 by XP)
+GET http://localhost:5000/api/users/leaderboard
+
+### Get all users
+GET http://localhost:5000/api/users
+
+### Create user
+POST http://localhost:5000/api/users
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "123456"
+}
+
+### Get user by ID
+GET http://localhost:5000/api/users/ID_HERE
+
+### Update user
+PUT http://localhost:5000/api/users/ID_HERE
+Content-Type: application/json
+
+{
+  "name": "Updated Name"
+}
+
+### Delete user
+DELETE http://localhost:5000/api/users/ID_HERE
+
+### Register
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "New User",
+  "email": "new@example.com",
+  "password": "123456"
+}
+
+### Login
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "new@example.com",
+  "password": "123456"
+}
+
+### Get Me (replace TOKEN_HERE)
+GET http://localhost:5000/api/auth/me
+Authorization: Bearer TOKEN_HERE
+
+### Add XP (positive only)
+PATCH http://localhost:5000/api/users/ID_HERE/xp
+Content-Type: application/json
+
+{
+  "amount": 100
+}
+
+### Update Coins (positive = add, negative = deduct)
+PATCH http://localhost:5000/api/users/ID_HERE/coins
+Content-Type: application/json
+
+{
+  "amount": 50
+}
+
+### Deduct Coins
+PATCH http://localhost:5000/api/users/ID_HERE/coins
+Content-Type: application/json
+
+{
+  "amount": -20
+}
+
+### Update Stars
+PATCH http://localhost:5000/api/users/ID_HERE/stars
+Content-Type: application/json
+
+{
+  "amount": 1
+}
+
+### Admin - Get Stats (replace TOKEN_HERE)
+GET http://localhost:5000/api/admin/stats
+Authorization: Bearer TOKEN_HERE
+
+### Admin - Create Topic (replace TOKEN_HERE)
+POST http://localhost:5000/api/admin/topics
+Authorization: Bearer TOKEN_HERE
+Content-Type: application/json
+
+{
+  "name": "Grammar Basics",
+  "questions": [
+    { "sentence": "She ___ to school every day.", "choices": ["go", "goes", "going", "gone"], "correctIndex": 1, "difficulty": "easy" },
+    { "sentence": "They ___ playing football now.", "choices": ["is", "am", "are", "be"], "correctIndex": 2, "difficulty": "easy" },
+    { "sentence": "I have ___ finished my homework.", "choices": ["already", "yet", "since", "for"], "correctIndex": 0, "difficulty": "medium" },
+    { "sentence": "He ___ lived here since 2010.", "choices": ["has", "have", "is", "was"], "correctIndex": 0, "difficulty": "easy" },
+    { "sentence": "We ___ visit our grandparents tomorrow.", "choices": ["will", "are", "do", "have"], "correctIndex": 0, "difficulty": "easy" },
+    { "sentence": "If I ___ rich, I would travel the world.", "choices": ["am", "was", "were", "be"], "correctIndex": 2, "difficulty": "hard" },
+    { "sentence": "The book ___ on the table.", "choices": ["is", "are", "am", "be"], "correctIndex": 0, "difficulty": "easy" },
+    { "sentence": "She ___ never been to Paris.", "choices": ["has", "have", "is", "was"], "correctIndex": 0, "difficulty": "medium" },
+    { "sentence": "___ you like some coffee?", "choices": ["Would", "Do", "Are", "Have"], "correctIndex": 0, "difficulty": "medium" },
+    { "sentence": "He drives ___ than his brother.", "choices": ["more careful", "most careful", "more carefully", "carefully"], "correctIndex": 2, "difficulty": "hard" }
+  ]
+}
+
+### Get All Topics
+GET http://localhost:5000/api/topics
+Authorization: Bearer TOKEN_HERE
+
+### Get Topic by ID
+GET http://localhost:5000/api/topics/TOPIC_ID_HERE
+Authorization: Bearer TOKEN_HERE
+
+### Get Progress (replace TOPIC_ID_HERE + TOKEN_HERE)
+GET http://localhost:5000/api/topics/TOPIC_ID_HERE/progress
+Authorization: Bearer TOKEN_HERE
+
+### Submit Section 1 (questions 0-4)
+POST http://localhost:5000/api/topics/TOPIC_ID_HERE/section1
+Authorization: Bearer TOKEN_HERE
+Content-Type: application/json
+
+{
+  "answers": [
+    { "questionIndex": 0, "selectedIndex": 1 },
+    { "questionIndex": 1, "selectedIndex": 2 },
+    { "questionIndex": 2, "selectedIndex": 0 },
+    { "questionIndex": 3, "selectedIndex": 0 },
+    { "questionIndex": 4, "selectedIndex": 0 }
+  ]
+}
+
+### Submit Section 2 (questions 5-9)
+POST http://localhost:5000/api/topics/TOPIC_ID_HERE/section2
+Authorization: Bearer TOKEN_HERE
+Content-Type: application/json
+
+{
+  "answers": [
+    { "questionIndex": 5, "selectedIndex": 2 },
+    { "questionIndex": 6, "selectedIndex": 0 },
+    { "questionIndex": 7, "selectedIndex": 0 },
+    { "questionIndex": 8, "selectedIndex": 0 },
+    { "questionIndex": 9, "selectedIndex": 2 }
+  ]
+}
+
+### Submit All 10 (old way)
+POST http://localhost:5000/api/topics/TOPIC_ID_HERE/submit
+Authorization: Bearer TOKEN_HERE
+Content-Type: application/json
+
+{
+  "answers": [
+    { "questionIndex": 0, "selectedIndex": 1 },
+    { "questionIndex": 1, "selectedIndex": 2 },
+    { "questionIndex": 2, "selectedIndex": 0 },
+    { "questionIndex": 3, "selectedIndex": 0 },
+    { "questionIndex": 4, "selectedIndex": 0 },
+    { "questionIndex": 5, "selectedIndex": 2 },
+    { "questionIndex": 6, "selectedIndex": 0 },
+    { "questionIndex": 7, "selectedIndex": 0 },
+    { "questionIndex": 8, "selectedIndex": 0 },
+    { "questionIndex": 9, "selectedIndex": 2 }
+  ]
+}
+
+### Get Result
+GET http://localhost:5000/api/topics/TOPIC_ID_HERE/result
+Authorization: Bearer TOKEN_HERE

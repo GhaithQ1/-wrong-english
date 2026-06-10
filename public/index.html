@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wrong English</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Wrong English</h1>
+    <div id="user-bar" class="hidden">
+      <span id="user-name"></span>
+      <span class="badge">Lv. <span id="user-level">1</span></span>
+      <span class="badge">XP <span id="user-xp">0</span></span>
+      <span class="badge coin">🪙 <span id="user-coins">0</span></span>
+      <span class="badge star">⭐ <span id="user-stars">0</span></span>
+    </div>
+    <div style="margin-top:0.5rem;display:flex;gap:0.5rem;justify-content:center;">
+      <a id="admin-link" class="btn sm hidden" href="/admin.html">Admin</a>
+      <button id="logout-btn" class="btn sm hidden" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- Auth Screen -->
+  <section id="auth-screen">
+    <h2>Login / Register</h2>
+    <div class="form-grid">
+      <input type="text" id="auth-name" placeholder="Name (register only)" />
+      <input type="email" id="auth-email" placeholder="Email" />
+      <input type="password" id="auth-password" placeholder="Password" />
+    </div>
+    <div class="btn-group">
+      <button class="btn" onclick="register()">Register</button>
+      <button class="btn" onclick="login()">Login</button>
+    </div>
+    <div id="auth-error" class="error"></div>
+  </section>
+
+  <!-- Daily Login -->
+  <section id="daily-section" class="hidden">
+    <div class="daily-header">
+      <span class="daily-title">Daily Login</span>
+      <span id="daily-day-label" class="daily-day-label">Day 0 / 7</span>
+    </div>
+    <div id="daily-grid" class="daily-grid"></div>
+    <button id="daily-claim-btn" class="btn primary" onclick="claimDaily()">Claim</button>
+    <p id="daily-message" class="daily-message"></p>
+  </section>
+
+  <!-- Traps Section -->
+  <section id="traps-section" class="hidden">
+    <div class="section-header">
+      <h2>🪤 Traps</h2>
+      <button class="btn sm" onclick="toggleCreateTrap()">+ Create</button>
+    </div>
+    <div id="create-trap-form" class="hidden" style="display:grid;gap:0.5rem;margin-bottom:0.75rem;">
+      <input type="text" id="trap-sentence" placeholder="Wrong sentence..." />
+      <input type="text" id="trap-correction" placeholder="Correct version..." />
+      <button class="btn primary" onclick="submitTrap()" id="trap-submit-btn">Create Trap</button>
+      <div id="trap-validation-msg" class="error" style="display:none;"></div>
+    </div>
+    <div class="trap-tabs">
+      <button id="tab-my" class="btn sm trap-tab active" onclick="switchTrapTab(true)">My Traps</button>
+      <button id="tab-all" class="btn sm trap-tab" onclick="switchTrapTab(false)">All Traps</button>
+    </div>
+    <div id="trap-filter-bar" class="trap-filter-bar hidden">
+      <button class="btn sm filter-btn active" data-diff="" onclick="filterTraps('')">All</button>
+      <button class="btn sm filter-btn" data-diff="easy" onclick="filterTraps('easy')">Easy</button>
+      <button class="btn sm filter-btn" data-diff="medium" onclick="filterTraps('medium')">Medium</button>
+      <button class="btn sm filter-btn" data-diff="hard" onclick="filterTraps('hard')">Hard</button>
+    </div>
+    <div id="traps-list"></div>
+  </section>
+
+  <!-- Topics Screen -->
+  <section id="topics-screen" class="hidden">
+    <div class="section-header">
+      <h2>Topics</h2>
+      <button class="btn sm" onclick="refreshUser()">Refresh</button>
+    </div>
+    <div id="topics-list"></div>
+  </section>
+
+  <!-- Quiz Screen -->
+  <section id="quiz-screen" class="hidden">
+    <div class="section-header">
+      <h2 id="quiz-title"></h2>
+      <span id="quiz-section-label" style="font-size:0.85rem;color:#888;"></span>
+    </div>
+    <div id="questions-container"></div>
+    <button id="submit-section-btn" class="btn primary" onclick="submitCurrentSection()">Submit</button>
+  </section>
+
+  <!-- Section 1 Result Screen -->
+  <section id="section-result-screen" class="hidden">
+    <h2>Section 1 Complete</h2>
+    <div id="section-result-content"></div>
+    <button class="btn" onclick="showSection2()" style="margin-top:0.5rem;width:100%;">Continue to Section 2</button>
+  </section>
+
+  <!-- Final Result Screen -->
+  <section id="result-screen" class="hidden">
+    <h2>Results</h2>
+    <div id="result-content"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+      <button class="btn" onclick="backToTopics()" style="flex:1;">Back to Topics</button>
+      <button id="retry-btn" class="btn danger" onclick="retryTopic()" style="flex:1;">Retry (10🪙)</button>
+    </div>
+  </section>
+
+  <footer><pre id="output" class="main-output hidden"></pre></footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
