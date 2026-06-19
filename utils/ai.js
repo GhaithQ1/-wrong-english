@@ -53,6 +53,84 @@ exports.validateTrapSafe = async (sentence, correction) => {
   }
 };
 
+exports.generateCorrection = async (sentence) => {
+  const res = await axios.post(
+    'https://api.openai.com/v1/chat/completions',
+    {
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: `You evaluate English sentences for the "Traps" learning game.
+A trap = a sentence that contains a grammar/usage/spelling error.
+
+IMPORTANT RULES:
+- valid=true  → this sentence HAS an error → it is a good trap → you MUST provide the correction
+- valid=false → this sentence is correct English → NOT a trap
+
+EXAMPLES:
+Sentence: "He go to school yesterday"
+→ {"valid":true,"correction":"He went to school yesterday","difficulty":"easy","reason":""}
+
+Sentence: "He went to school yesterday"
+→ {"valid":false,"correction":"","difficulty":"easy","reason":"الجملة صحيحة لا يوجد خطأ"}
+
+Sentence: "He can not to swim when he was young"
+→ {"valid":true,"correction":"He could not swim when he was young","difficulty":"medium","reason":""}
+
+Sentence: "When I was a child I can swim very well"
+→ {"valid":true,"correction":"When I was a child I could swim very well","difficulty":"medium","reason":""}
+
+Sentence: "He can not swim when he was young"
+→ {"valid":true,"correction":"He could not swim when he was young","difficulty":"medium","reason":""}
+
+Sentence: "She can speaks three languages"
+→ {"valid":true,"correction":"She can speak three languages","difficulty":"easy","reason":""}
+
+Sentence: "She don't like coffee"
+→ {"valid":true,"correction":"She doesn't like coffee","difficulty":"easy","reason":""}
+
+Sentence: "I have been to Paris last year"
+→ {"valid":true,"correction":"I went to Paris last year","difficulty":"medium","reason":""}
+
+Difficulty guide:
+- easy: Basic grammar (subject-verb agreement like "he go", simple tense errors like "yesterday I go", a/an, plurals, don't/doesn't)
+- medium: Intermediate concepts (prepositions, conditionals, relative clauses, passive voice, gerunds/infinitives, can/could, tense mixing)
+- hard: Advanced nuances (third mixed conditionals, subjunctive mood, inversion, complex tense sequences)
+
+Return valid JSON only, no markdown, no backticks.`,
+        },
+        {
+          role: 'user',
+          content: `Sentence: "${sentence}"`,
+        },
+      ],
+      temperature: 0.1,
+      max_tokens: 200,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      timeout: 20000,
+    }
+  );
+
+  let text = res.data.choices[0].message.content.trim();
+  if (text.startsWith('```')) text = text.replace(/```(json)?/g, '').trim();
+  return JSON.parse(text);
+};
+
+exports.generateCorrectionSafe = async (sentence) => {
+  try {
+    return await exports.generateCorrection(sentence);
+  } catch (err) {
+    console.error('AI generateCorrection failed:', err.message);
+    return { valid: false, correction: '', difficulty: 'medium', reason: 'تعذر الاتصال بالذكاء الاصطناعي، تأكد من مفتاح API' };
+  }
+};
+
 exports.checkAnswer = async (sentence, correction, userAnswer) => {
   const res = await axios.post(
     'https://api.openai.com/v1/chat/completions',
@@ -99,6 +177,8 @@ exports.checkAnswerSafe = async (sentence, correction, userAnswer) => {
     return await exports.checkAnswer(sentence, correction, userAnswer);
   } catch (err) {
     console.error('AI checkAnswer failed:', err.message);
-    return { correct: false, reason: '' };
+    const c = correction.trim().toLowerCase().replace(/[^a-z0-9\s]/g, '');
+    const a = userAnswer.trim().toLowerCase().replace(/[^a-z0-9\s]/g, '');
+    return { correct: c === a, reason: '' };
   }
 };

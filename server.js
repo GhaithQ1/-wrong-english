@@ -10,6 +10,7 @@ const app = express();
 
 connectDB();
 
+app.use('/uploads', express.static('uploads'));
 app.use(express.static('public'));
 app.use(helmet());
 app.use(cors());
@@ -26,6 +27,7 @@ app.use('/api/topics', require('./routes/topicRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/daily', require('./routes/dailyRoutes'));
 app.use('/api/traps', require('./routes/trapRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 app.use(errorHandler);
 

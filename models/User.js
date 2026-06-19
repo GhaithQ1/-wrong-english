@@ -3,6 +3,10 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
   {
+    googleId: {
+      type: String,
+      default: '',
+    },
     name: {
       type: String,
       required: [true, 'Name is required'],
@@ -14,9 +18,12 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
     },
+    avatar: {
+      type: String,
+      default: '',
+    },
     password: {
       type: String,
-      required: [true, 'Password is required'],
       minlength: 6,
       select: false,
     },
@@ -59,34 +66,33 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
-    traps: [{
-      sentence: { type: String, required: true, trim: true },
-      correction: { type: String, required: true, trim: true },
-      hint: { type: String, trim: true, default: '' },
-      difficulty: { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' },
-      aiValidated: { type: Boolean, default: false },
-      totalAttempts: { type: Number, default: 0 },
-      correctAttempts: { type: Number, default: 0 },
-      rewardClaimed: { type: Boolean, default: false },
-      attempts: [{
-        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        answer: { type: String, required: true },
-        correct: { type: Boolean, required: true },
-        createdAt: { type: Date, default: Date.now },
-      }],
-    }],
+    passwordResetToken: String,
+    passwordResetExpires: Date,
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 
+userSchema.virtual('xpToNextLevel').get(function () {
+  const lvl = this.constructor.calcLevel(this.xp);
+  if (lvl >= 100) return 0;
+  return this.constructor.xpForLevel(lvl + 1) - this.xp;
+});
+
 userSchema.statics.calcLevel = function (xp) {
-  if (xp >= 250) return 3;
-  if (xp >= 100) return 2;
-  return 1;
+  return Math.min(100, Math.floor((1 + Math.sqrt(1 + (4 * xp) / 5)) / 2));
+};
+
+userSchema.statics.xpForLevel = function (level) {
+  return 5 * level * (level - 1);
 };
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
+  if (!this.password) return next();
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });

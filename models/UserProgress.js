@@ -6,7 +6,7 @@ const answerSchema = new mongoose.Schema({
   correct: { type: Boolean, required: true },
 }, { _id: false });
 
-const sectionSchema = new mongoose.Schema({
+const partSchema = new mongoose.Schema({
   answers: [answerSchema],
   correct: { type: Number, default: 0 },
   total: { type: Number, default: 5 },
@@ -14,17 +14,17 @@ const sectionSchema = new mongoose.Schema({
   completed: { type: Boolean, default: false },
 }, { _id: false });
 
+const sectionProgressSchema = new mongoose.Schema({
+  sectionIndex: { type: Number, required: true },
+  part1: { type: partSchema, default: () => ({}) },
+  part2: { type: partSchema, default: () => ({}) },
+  completed: { type: Boolean, default: false },
+}, { _id: false });
+
 const userProgressSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   topic: { type: mongoose.Schema.Types.ObjectId, ref: 'Topic', required: true },
-  section1: { type: sectionSchema, default: () => ({}) },
-  section2: { type: sectionSchema, default: () => ({}) },
-  totalCorrect: { type: Number, default: 0 },
-  rewards: {
-    xp: { type: Number, default: 0 },
-    coins: { type: Number, default: 0 },
-    stars: { type: Number, default: 0 },
-  },
+  sections: [sectionProgressSchema],
   completed: { type: Boolean, default: false },
 }, { timestamps: true });
 

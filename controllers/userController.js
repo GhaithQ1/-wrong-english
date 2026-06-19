@@ -102,7 +102,7 @@ exports.updateStars = async (req, res, next) => {
 
 exports.getLeaderboard = async (req, res, next) => {
   try {
-    const users = await User.find().sort({ xp: -1 }).limit(20);
+    const users = await User.find().sort({ xp: -1 }).limit(100);
     res.json({ status: 'success', data: users });
   } catch (err) {
     next(err);
